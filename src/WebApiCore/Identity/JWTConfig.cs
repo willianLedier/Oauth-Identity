@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace Oauth_Identity.Configurations
+namespace WebApiCore.Identity
 {
     public static class JWTConfig
     {

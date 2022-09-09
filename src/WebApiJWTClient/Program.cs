@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Oauth_Identity
+namespace WebApiClient
 {
     public class Program
     {

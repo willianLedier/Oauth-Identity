@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Oauth_Identity.Configurations;
-using Oauth_Identity.Integration;
 using Oauth_Identity.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,6 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using WebApiCore.Identity;
 
 namespace Oauth_Identity.Controllers
 {
@@ -50,16 +49,6 @@ namespace Oauth_Identity.Controllers
 
             if (result.Succeeded)
             {
-
-                // Integração Cadastro Jogador
-                //var jogadorResult = await RegistrarJogador(usuarioRegistro);
-
-                //if (!jogadorResult.ValidationResult.IsValid)
-                //{
-                //    await _userManager.DeleteAsync(user);
-                //    return CustomResponse(jogadorResult.ValidationResult);
-                //}
-
                 return CustomResponse(await GerarJwt(usuarioRegistro.Email));
             }
 
@@ -71,26 +60,6 @@ namespace Oauth_Identity.Controllers
             return CustomResponse();
 
         }
-
-        // Integration BUS
-        //private async Task<ResponseMessage> RegistrarJogador(UsuarioRegistro usuarioRegistro)
-        //{
-
-        //    var user = await _userManager.FindByEmailAsync(usuarioRegistro.Email);
-        //    //var jogadorRegistrado = new JogadorRegistradoIntegrationEvent(Guid.Parse(user.Id), usuarioRegistro.PeFavorito,
-        //    //    usuarioRegistro.Altura, usuarioRegistro.Peso, usuarioRegistro.TamanhoChuteira, usuarioRegistro.TimeCoracao);
-
-        //    try
-        //    {
-        //        //return await _bus.RequestAsync<JogadorRegistradoIntegrationEvent, ResponseMessage>(jogadorRegistrado);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        await _userManager.DeleteAsync(user);
-        //        throw;
-        //    }
-
-        //}
 
         [HttpPost("autenticar")]
         public async Task<ActionResult> Login(UsuarioLogin usuarioLogin)
@@ -111,28 +80,6 @@ namespace Oauth_Identity.Controllers
 
             AdicionarErroProcessamento("Usuário ou Senha incorretos");
             return CustomResponse();
-
-        }
-
-        private async Task<object> RegistrarCliente(UsuarioRegistro usuarioRegistro)
-        {
-            //var usuario = await _authenticationService.UserManager.FindByEmailAsync(usuarioRegistro.Email);
-
-            //var usuarioRegistrado = new UsuarioRegistradoIntegrationEvent(
-            //    Guid.Parse(usuario.Id), usuarioRegistro.Nome, usuarioRegistro.Email, usuarioRegistro.Cpf);
-
-            //try
-            //{
-            //    return await _bus.RequestAsync<UsuarioRegistradoIntegrationEvent, ResponseMessage>(usuarioRegistrado);
-            //}
-            //catch
-            //{
-            //    await _authenticationService.UserManager.DeleteAsync(usuario);
-            //    throw;
-            //}
-
-            return null;
-
 
         }
 
@@ -166,11 +113,13 @@ namespace Oauth_Identity.Controllers
             var claims = await _userManager.GetClaimsAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
 
+
             claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
             claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
+            claims.Add(new Claim("Catalogo", "Ler"));
 
             foreach (var role in userRoles) claims.Add(new Claim("role", role));
 
@@ -203,9 +152,6 @@ namespace Oauth_Identity.Controllers
 
         private static long ToUnixEpochDate(DateTime date)
             => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
-
-
-        
 
     }
 }

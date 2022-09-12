@@ -1,0 +1,23 @@
+﻿@using WebMVCJWTClient.Identity
+@inject IAspNetUser AppUser
+
+@if (AppUser.EstaAutenticado())
+{
+
+    <div class="widget-header">
+        <small class="title text-muted">Olá usuário!</small>
+        <div>
+            <a class="dropdown-item" asp-controller="Identity" asp-action="Logout">Sair</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="widget-header">
+        <small class="title text-muted">Bem vindo!</small>
+        <div>
+            <a asp-controller="Identity" asp-action="Registro">Crie sua conta</a> <span> | </span>
+            <a asp-controller="Identity" asp-action="Login"> Login</a>
+        </div>
+    </div>
+}
